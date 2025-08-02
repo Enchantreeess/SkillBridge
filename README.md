@@ -1,4 +1,4 @@
-## 🌉 SkillBridge - Full Stack Microlearning Platform
+##  SkillBridge - Full Stack Microlearning Platform
 
 **SkillBridge** is a **full-stack web application** designed to make microlearning fun, engaging, and trackable. Built using **Next.js**, **TailwindCSS**, and a connected **backend**, this platform offers a dynamic and gamified experience for learners.
 
