@@ -62,12 +62,18 @@ export default function Team() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16 animate-fade-in">
-          <h1 className="text-5xl font-poppins font-bold text-slate-800 mb-4">Meet Our Team</h1>
-          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            The passionate minds behind SkillBridge - dedicated to making learning accessible, engaging, and
-            transformative for everyone around the world.
-          </p>
-        </div>
+  <div className="flex justify-center items-center space-x-2 mb-4">
+    <h1 className="overflow-hidden whitespace-nowrap border-r-2 border-slate-800 text-5xl font-poppins font-bold text-slate-800 animate-typewriter">
+      Meet Our Team
+    </h1>
+    <span className="animate-blink text-slate-800 font-bold text-5xl">|</span>
+  </div>
+  <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+    The passionate minds behind SkillBridge – dedicated to making learning accessible, engaging, and
+    transformative for everyone around the world.
+  </p>
+</div>
+
 
         {/* Team Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 max-w-6xl mx-auto">

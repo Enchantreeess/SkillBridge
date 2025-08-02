@@ -80,10 +80,18 @@ export default function MyLearning() {
     <div className="min-h-screen py-8 px-4 animate-slide-in-right">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-5xl font-poppins font-bold text-slate-800 mb-4">My Learning Journey</h1>
-          <p className="text-xl text-slate-600">Track your progress and continue your learning adventure</p>
-        </div>
+       {/* Header */}
+<div className="text-center mb-12 animate-fade-in">
+  <h1 className="text-5xl font-poppins font-bold text-slate-800 mb-4">My Learning Journey</h1>
+  <p className="text-xl text-slate-600 mb-4">Track your progress and continue your learning adventure</p>
+
+  <div className="flex justify-center items-center space-x-2">
+    <h2 className="overflow-hidden whitespace-nowrap border-r-2 border-sage-600 text-xl sm:text-2xl font-poppins font-semibold text-sage-600 animate-typewriter">
+      Bridge the gap between curiosity and mastery
+    </h2>
+    <span className="animate-blink text-sage-600 font-bold text-2xl">|</span>
+  </div>
+</div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 stagger-animation">

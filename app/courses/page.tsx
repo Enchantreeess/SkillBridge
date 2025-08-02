@@ -75,10 +75,17 @@ export default function Courses() {
     <div className="min-h-screen py-8 px-4 animate-fade-in-scale">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12 animate-slide-in-bottom">
-          <h1 className="text-5xl font-poppins font-bold text-slate-800 mb-4">Explore Courses</h1>
-          <p className="text-xl text-slate-600">Master new skills in just 5 minutes</p>
-        </div>
+      <div className="text-center mb-12 animate-slide-in-bottom">
+  <h1 className="text-5xl font-poppins font-bold text-slate-800 mb-4">Explore Courses</h1>
+  <p className="text-xl text-slate-600 mb-4">Master new skills in just 5 minutes</p>
+
+  <div className="flex justify-center items-center space-x-2">
+    <h2 className="overflow-hidden whitespace-nowrap border-r-2 border-lavender-600 text-xl sm:text-2xl font-poppins font-semibold text-lavender-600 animate-typewriter">
+      Build your future, one micro-course at a time
+    </h2>
+    <span className="animate-blink text-lavender-600 font-bold text-2xl">|</span>
+  </div>
+</div>
 
         {/* Category Filter */}
         <div className="flex flex-wrap justify-center gap-4 mb-12 animate-slide-in-left">

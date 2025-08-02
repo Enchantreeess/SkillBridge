@@ -107,9 +107,17 @@ export default function Gamify() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12 animate-slide-in-bottom">
-          <h1 className="text-5xl font-poppins font-bold text-slate-800 mb-4">🎮 Gamify Your Learning</h1>
-          <p className="text-xl text-slate-600">Level up, earn rewards, and track your achievements</p>
-        </div>
+  <h1 className="text-5xl font-poppins font-bold text-slate-800 mb-4">🎮 Gamify Your Learning</h1>
+  <p className="text-xl text-slate-600 mb-4">Level up, earn rewards, and track your achievements</p>
+
+  <div className="flex justify-center items-center space-x-2">
+    <h2 className="overflow-hidden whitespace-nowrap border-r-2 border-purple-600 text-xl sm:text-2xl font-poppins font-semibold text-purple-600 animate-typewriter">
+      Turn micro-learning into a daily quest 🎯
+    </h2>
+    <span className="animate-blink text-purple-600 font-bold text-2xl">|</span>
+  </div>
+</div>
+
 
         {/* Dashboard Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 stagger-animation">
