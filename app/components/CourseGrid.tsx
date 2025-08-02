@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+
 const courses = [
   {
     title: "Git Mastery",
@@ -78,36 +80,41 @@ export default function CourseGrid() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {courses.map((course, index) => (
-            <div
-              key={index}
-              className="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/10 cursor-pointer"
-            >
-              {/* Tag */}
-              <div
-                className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r ${course.color} text-white`}
-              >
-                {course.tag}
-              </div>
+          {courses.map((course, index) => {
+            const slug = course.title.toLowerCase().replace(/\s+/g, "-")
+            return (
+              <Link href={`/certificate/${slug}`} key={index}>
+                <div
+                  tabIndex={0}
+                  className="group relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 hover:border-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/10 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  {/* Tag */}
+                  <div
+                    className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r ${course.color} text-white`}
+                  >
+                    {course.tag}
+                  </div>
 
-              {/* Icon */}
-              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">{course.icon}</div>
+                  {/* Icon */}
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">{course.icon}</div>
 
-              {/* Content */}
-              <h3 className="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-pink-400 group-hover:bg-clip-text transition-all duration-300">
-                {course.title}
-              </h3>
-              <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
-                {course.description}
-              </p>
+                  {/* Content */}
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-400 group-hover:to-pink-400 group-hover:bg-clip-text transition-all duration-300">
+                    {course.title}
+                  </h3>
+                  <p className="text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
+                    {course.description}
+                  </p>
 
-              {/* Hover Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-pink-500/0 group-hover:from-blue-500/10 group-hover:to-pink-500/10 rounded-2xl transition-all duration-300 pointer-events-none"></div>
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-pink-500/0 group-hover:from-blue-500/10 group-hover:to-pink-500/10 rounded-2xl transition-all duration-300 pointer-events-none"></div>
 
-              {/* Animated Border */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 blur-sm"></div>
-            </div>
-          ))}
+                  {/* Animated Border */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 blur-sm"></div>
+                </div>
+              </Link>
+            )
+          })}
         </div>
       </div>
     </section>

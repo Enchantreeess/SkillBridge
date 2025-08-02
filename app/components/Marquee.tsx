@@ -1,29 +1,41 @@
-const courses = [
-  { name: "Git Mastery", icon: "🔧", color: "sage" },
-  { name: "Figma Design", icon: "🎨", color: "sky" },
-  { name: "AI Prompting", icon: "🤖", color: "lavender" },
-  { name: "Canva Quick", icon: "✨", color: "beige" },
-  { name: "React Hooks", icon: "⚛️", color: "sage" },
-  { name: "CSS Grid", icon: "📐", color: "sky" },
-  { name: "TypeScript", icon: "📝", color: "lavender" },
-  { name: "Node.js API", icon: "🚀", color: "beige" },
-]
+"use client"
+
+import { useCourses } from "@/hooks/useCourses"
 
 export default function Marquee() {
+  const { courses } = useCourses()
+
+  // Take first 8 courses for marquee
+  const marqueeCourses = courses.slice(0, 8)
+
   return (
     <section
-      id="marquee"
-      className="py-16 bg-gradient-to-r from-sage-100/50 to-sky-100/50 backdrop-blur-sm border-y border-sage-200/30"
+      id="courses"
+      className="py-16 bg-gradient-to-r from-sage-100/50 via-lavender-100/50 to-sky-100/50 backdrop-blur-sm border-y border-sage-200/30"
     >
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-poppins font-bold text-slate-800 mb-2">Popular Courses</h2>
+        <p className="text-slate-600">Discover what thousands of learners are mastering</p>
+      </div>
+
       <div className="overflow-hidden">
         <div className="flex animate-marquee whitespace-nowrap">
-          {[...courses, ...courses, ...courses].map((course, index) => (
+          {[...marqueeCourses, ...marqueeCourses, ...marqueeCourses].map((course, index) => (
             <div
-              key={index}
-              className={`mx-6 flex items-center space-x-3 bg-white/60 backdrop-blur-sm border border-${course.color}-200/50 rounded-full px-6 py-3 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300`}
+              key={`${course.id}-${index}`}
+              className="mx-6 flex-shrink-0 bg-white/60 backdrop-blur-sm border border-sage-200/50 rounded-2xl p-4 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 w-80"
             >
-              <span className="text-2xl">{course.icon}</span>
-              <span className="font-poppins font-medium text-slate-700">{course.name}</span>
+              <img
+                src={course.image_url || "/placeholder.svg?height=120&width=280&text=Course"}
+                alt={course.title}
+                className="w-full h-32 object-cover rounded-lg mb-3"
+              />
+              <h3 className="font-poppins font-semibold text-slate-800 mb-1 truncate">{course.title}</h3>
+              <p className="text-sm text-sage-600 mb-2">by {course.instructor}</p>
+              <div className="flex items-center justify-between">
+                <span className="text-xs bg-sage-100 text-sage-700 px-2 py-1 rounded-full">{course.category}</span>
+                <span className="text-sm font-medium text-lavender-600">{course.xp_reward} XP</span>
+              </div>
             </div>
           ))}
         </div>

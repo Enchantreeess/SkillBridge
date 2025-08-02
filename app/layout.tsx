@@ -5,6 +5,9 @@ import "./globals.css"
 import Navbar from "./components/Navbar"
 import Footer from "./components/Footer"
 import ClientLayout from "./components/ClientLayout"
+import PageTransition from "./components/PageTransition"
+import { SupabaseProvider } from "./components/SupabaseProvider"
+import SupabaseStatus from "./components/SupabaseStatus"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -30,12 +33,17 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
-      <body className="font-inter bg-gradient-to-br from-sage-50 via-sky-50 to-lavender-50 min-h-screen">
-        <ClientLayout>
-          <Navbar />
-          <main className="pt-20">{children}</main>
-          <Footer />
-        </ClientLayout>
+      <body className="font-inter bg-gradient-to-br from-sage-50 via-lavender-50 to-sky-50 min-h-screen">
+        <SupabaseProvider>
+          <SupabaseStatus />
+          <ClientLayout>
+            <Navbar />
+            <PageTransition>
+              <main className="pt-20">{children}</main>
+            </PageTransition>
+            <Footer />
+          </ClientLayout>
+        </SupabaseProvider>
       </body>
     </html>
   )

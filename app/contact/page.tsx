@@ -3,175 +3,303 @@
 import type React from "react"
 
 import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Label } from "@/components/ui/label"
+import { Mail, Phone, MapPin, Send, CheckCircle, AlertCircle, Loader2 } from "lucide-react"
+import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase"
+import { PageTransition } from "@/components/PageTransition"
 
-export default function Contact() {
+export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     message: "",
   })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
-  }
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [errorMessage, setErrorMessage] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
+    setStatus("loading")
+    setErrorMessage("")
 
-    // Simulate API call - Ready for Supabase integration
     try {
-      // TODO: Replace with actual Supabase call
-      // const { data, error } = await supabase
-      //   .from('contacts')
-      //   .insert([formData])
+      if (!isSupabaseConfigured()) {
+        // Demo mode - simulate successful submission
+        console.log("Demo mode: Contact form submitted", formData)
+        await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulate network delay
+        setStatus("success")
+        setFormData({ name: "", email: "", message: "" })
+        return
+      }
 
-      console.log("Form submitted:", formData)
+      const supabase = getSupabaseClient()
+      const { data, error } = await supabase
+        .from("contact_submissions")
+        .insert([
+          {
+            name: formData.name,
+            email: formData.email,
+            message: formData.message,
+            status: "new",
+          },
+        ])
+        .select()
 
-      // Reset form
+      if (error) {
+        // Handle specific database errors
+        if (
+          error.code === "PGRST116" ||
+          error.message.includes("relation") ||
+          error.message.includes("does not exist")
+        ) {
+          console.warn("Contact table doesn't exist, falling back to demo mode")
+          // Simulate successful submission in demo mode
+          await new Promise((resolve) => setTimeout(resolve, 1000))
+          setStatus("success")
+          setFormData({ name: "", email: "", message: "" })
+          return
+        }
+
+        console.error("Supabase error details:", {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+        })
+
+        throw new Error(error.message || "Failed to submit contact form")
+      }
+
+      console.log("Contact form submitted successfully:", data)
+      setStatus("success")
       setFormData({ name: "", email: "", message: "" })
-      alert("Message sent successfully!")
-    } catch (error) {
-      console.error("Error:", error)
-      alert("Error sending message. Please try again.")
-    } finally {
-      setIsSubmitting(false)
+    } catch (error: any) {
+      console.error("Error submitting contact form:", error)
+      setStatus("error")
+      setErrorMessage(error.message || "An unexpected error occurred. Please try again.")
+    }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }))
+  }
+
+  const getButtonContent = () => {
+    switch (status) {
+      case "loading":
+        return (
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            Sending...
+          </>
+        )
+      case "success":
+        return (
+          <>
+            <CheckCircle className="w-4 h-4 mr-2" />
+            Message Sent!
+          </>
+        )
+      case "error":
+        return (
+          <>
+            <AlertCircle className="w-4 h-4 mr-2" />
+            Try Again
+          </>
+        )
+      default:
+        return (
+          <>
+            <Send className="w-4 h-4 mr-2" />
+            Send Message
+          </>
+        )
+    }
+  }
+
+  const getButtonClass = () => {
+    switch (status) {
+      case "success":
+        return "bg-green-600 hover:bg-green-700 border-green-600"
+      case "error":
+        return "bg-red-600 hover:bg-red-700 border-red-600"
+      default:
+        return "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
     }
   }
 
   return (
-    <div className="min-h-screen py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-poppins font-bold text-slate-800 mb-4">Get In Touch</h1>
-          <p className="text-xl text-slate-600">
-            Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Contact Form */}
-          <div className="bg-white/60 backdrop-blur-sm border border-sage-200/50 rounded-2xl p-8 shadow-lg">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Name Field */}
-              <div className="relative">
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-white/50 border-2 border-sage-200/50 rounded-lg px-4 py-3 text-slate-800 placeholder-transparent focus:outline-none focus:border-sage-400 focus:bg-white/80 transition-all duration-300 peer"
-                  placeholder="Your Name"
-                />
-                <label className="absolute left-4 -top-2.5 text-sm text-sage-600 bg-white px-2 transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:text-slate-500 peer-placeholder-shown:top-3 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-sage-600 peer-focus:bg-white">
-                  Your Name
-                </label>
-              </div>
-
-              {/* Email Field */}
-              <div className="relative">
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-white/50 border-2 border-sage-200/50 rounded-lg px-4 py-3 text-slate-800 placeholder-transparent focus:outline-none focus:border-sage-400 focus:bg-white/80 transition-all duration-300 peer"
-                  placeholder="Your Email"
-                />
-                <label className="absolute left-4 -top-2.5 text-sm text-sage-600 bg-white px-2 transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:text-slate-500 peer-placeholder-shown:top-3 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-sage-600 peer-focus:bg-white">
-                  Your Email
-                </label>
-              </div>
-
-              {/* Message Field */}
-              <div className="relative">
-                <textarea
-                  name="message"
-                  value={formData.message}
-                  onChange={handleChange}
-                  required
-                  rows={5}
-                  className="w-full bg-white/50 border-2 border-sage-200/50 rounded-lg px-4 py-3 text-slate-800 placeholder-transparent focus:outline-none focus:border-sage-400 focus:bg-white/80 transition-all duration-300 peer resize-none"
-                  placeholder="Your Message"
-                />
-                <label className="absolute left-4 -top-2.5 text-sm text-sage-600 bg-white px-2 transition-all duration-300 peer-placeholder-shown:text-base peer-placeholder-shown:text-slate-500 peer-placeholder-shown:top-3 peer-placeholder-shown:bg-transparent peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-sage-600 peer-focus:bg-white">
-                  Your Message
-                </label>
-              </div>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-sage-500 to-sky-500 hover:from-sage-600 hover:to-sky-600 disabled:from-gray-400 disabled:to-gray-500 text-white font-poppins font-semibold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg disabled:scale-100 disabled:shadow-none"
-              >
-                {isSubmitting ? (
-                  <div className="flex items-center justify-center">
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                    Sending...
-                  </div>
-                ) : (
-                  "Send Message"
-                )}
-              </button>
-            </form>
+    <PageTransition variant="slide-in-right">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 py-12 px-4">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
+              Get in Touch
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Have questions about SkillBridge? We'd love to hear from you. Send us a message and we'll respond as soon
+              as possible.
+            </p>
           </div>
 
-          {/* Contact Info */}
-          <div className="space-y-8">
-            <div className="bg-gradient-to-br from-sage-100 to-sky-100 rounded-2xl p-6 shadow-lg">
-              <h3 className="text-xl font-poppins font-semibold text-slate-800 mb-4">📧 Email Us</h3>
-              <p className="text-slate-600 mb-2">hello@skillbridge.com</p>
-              <p className="text-slate-600">support@skillbridge.com</p>
-            </div>
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Contact Form */}
+            <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+              <CardHeader className="pb-6">
+                <CardTitle className="text-2xl font-bold text-gray-800">Send us a Message</CardTitle>
+                <CardDescription className="text-gray-600">
+                  Fill out the form below and we'll get back to you within 24 hours.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-sm font-medium text-gray-700">
+                      Full Name
+                    </Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      type="text"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
 
-            <div className="bg-gradient-to-br from-sky-100 to-lavender-100 rounded-2xl p-6 shadow-lg">
-              <h3 className="text-xl font-poppins font-semibold text-slate-800 mb-4">💬 Live Chat</h3>
-              <p className="text-slate-600 mb-4">Get instant help from our support team</p>
-              <button className="bg-gradient-to-r from-sky-500 to-lavender-500 hover:from-sky-600 hover:to-lavender-600 text-white font-medium py-2 px-4 rounded-full transition-all duration-300 hover:scale-105">
-                Start Chat
-              </button>
-            </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                      Email Address
+                    </Label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                      placeholder="Enter your email address"
+                    />
+                  </div>
 
-            <div className="bg-gradient-to-br from-lavender-100 to-sage-100 rounded-2xl p-6 shadow-lg">
-              <h3 className="text-xl font-poppins font-semibold text-slate-800 mb-4">📱 Follow Us</h3>
-              <div className="flex space-x-4">
-                <a
-                  href="#"
-                  className="w-10 h-10 bg-sage-500 hover:bg-sage-600 text-white rounded-full flex items-center justify-center transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="w-10 h-10 bg-sky-500 hover:bg-sky-600 text-white rounded-full flex items-center justify-center transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z" />
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="w-10 h-10 bg-lavender-500 hover:bg-lavender-600 text-white rounded-full flex items-center justify-center transition-colors"
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                  </svg>
-                </a>
-              </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="message" className="text-sm font-medium text-gray-700">
+                      Message
+                    </Label>
+                    <Textarea
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      rows={6}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
+                      placeholder="Tell us how we can help you..."
+                    />
+                  </div>
+
+                  {status === "error" && errorMessage && (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-red-700 text-sm">{errorMessage}</p>
+                    </div>
+                  )}
+
+                  {status === "success" && (
+                    <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-green-700 text-sm">Thank you for your message! We'll get back to you soon.</p>
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    disabled={status === "loading"}
+                    className={`w-full py-3 px-6 text-white font-semibold rounded-lg transition-all duration-200 ${getButtonClass()}`}
+                  >
+                    {getButtonContent()}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            {/* Contact Information */}
+            <div className="space-y-8">
+              <Card className="shadow-xl border-0 bg-gradient-to-br from-purple-600 to-blue-600 text-white">
+                <CardContent className="p-8">
+                  <h3 className="text-2xl font-bold mb-6">Contact Information</h3>
+                  <div className="space-y-6">
+                    <div className="flex items-start space-x-4">
+                      <Mail className="w-6 h-6 mt-1 text-purple-200" />
+                      <div>
+                        <h4 className="font-semibold mb-1">Email</h4>
+                        <p className="text-purple-100">support@skillbridge.com</p>
+                        <p className="text-purple-100">hello@skillbridge.com</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-4">
+                      <Phone className="w-6 h-6 mt-1 text-purple-200" />
+                      <div>
+                        <h4 className="font-semibold mb-1">Phone</h4>
+                        <p className="text-purple-100">+1 (555) 123-4567</p>
+                        <p className="text-purple-100">+1 (555) 987-6543</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-4">
+                      <MapPin className="w-6 h-6 mt-1 text-purple-200" />
+                      <div>
+                        <h4 className="font-semibold mb-1">Address</h4>
+                        <p className="text-purple-100">
+                          123 Learning Street
+                          <br />
+                          Education City, EC 12345
+                          <br />
+                          United States
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
+                <CardContent className="p-8">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-4">Office Hours</h3>
+                  <div className="space-y-3 text-gray-600">
+                    <div className="flex justify-between">
+                      <span>Monday - Friday</span>
+                      <span className="font-semibold">9:00 AM - 6:00 PM</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Saturday</span>
+                      <span className="font-semibold">10:00 AM - 4:00 PM</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Sunday</span>
+                      <span className="font-semibold">Closed</span>
+                    </div>
+                  </div>
+                  <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                    <p className="text-blue-800 text-sm">
+                      <strong>Response Time:</strong> We typically respond to all inquiries within 24 hours during
+                      business days.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </PageTransition>
   )
 }
