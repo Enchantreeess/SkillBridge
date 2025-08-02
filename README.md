@@ -8,13 +8,15 @@ The platform focuses on **quick 5-minute courses** across domains, offering XP-b
 ## Deployed at :
 https://v0-skill-bridge-landing-page-alpha.vercel.app/
 
-##TechStack 
+## TechStack 
 - **Frontend**: Next.js, React, Tailwind CSS  
 - **Styling**: TailwindCSS (custom themes, gradients, animations)  
 - **Backend**: Supabase / Vercel (Deployment)  
 - **State Management**: React Hooks  
 - **Icons**: Heroicons, SVGs  
+- **Authentication** : Supabase Authentication 
 - **Hosting**: Vercel
+  
 
 ## Key Features Implemented
 
