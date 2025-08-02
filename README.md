@@ -1,12 +1,12 @@
-# SkillBridge 
+## 🌉 SkillBridge - Full Stack Microlearning Platform
+
+**SkillBridge** is a **full-stack web application** designed to make microlearning fun, engaging, and trackable. Built using **Next.js**, **TailwindCSS**, and a connected **backend**, this platform offers a dynamic and gamified experience for learners.
+
+The platform focuses on **quick 5-minute courses** across domains, offering XP-based progress, gamification, and personalized tracking. Designed with both aesthetic appeal and functionality in mind, SkillBridge is perfect for students, developers, and curious learners.
 
 
-
-[![Deployed on Vercel](https://v0-skill-bridge-landing-page-alpha.vercel.app/)
-
-
-## Overview
-**SkillBridge** is a free, gamified microlearning platform built to bridge the gap between curiosity and mastery. It offers bite-sized, engaging learning experiences with progress tracking, achievements, and gamification.
+## Deployed at :
+https://v0-skill-bridge-landing-page-alpha.vercel.app/
 
 ##TechStack 
 - **Frontend**: Next.js, React, Tailwind CSS  
